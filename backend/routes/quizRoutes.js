@@ -1,8 +1,9 @@
 import express from 'express';
 import {
-    getAllQuizzes,
-    getQuiz,
-    submitAnswer,
+    getQuizzes,
+    getQuizById,
+    submitQuiz,
+    getQuizResults,
     deleteQuiz
 } from '../controllers/quizController.js';
 import protect from '../middleware/auth.js';
