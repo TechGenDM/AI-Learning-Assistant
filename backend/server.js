@@ -46,7 +46,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/quizzes', quizRoutes);
-app.use('./api/progress', progressRoutes);
+app.use('/api/progress', progressRoutes);
 
 app.use(errorHandler);
 

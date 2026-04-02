@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import authService from '../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -20,18 +19,27 @@ export const AuthProvider = ({ children }) => {
         checkAuthStatus();
     }, []);
 
-    const checkAuthStatus = async () => {
+    const checkAuthStatus = () => {
         try {
             const token = localStorage.getItem('token');
-            const useStr = localStorage.getItem('user');
+            const userStr = localStorage.getItem('user');
 
-            if (token && useStr) {
-                const userData = JSON.parse(useStr);
+            if (token && userStr) {
+                const userData = JSON.parse(userStr);
                 setUser(userData);
                 setIsAuthenticated(true);
+            } else {
+                // Explicitly clear state if no token/user found
+                setUser(null);
+                setIsAuthenticated(false);
             }
         } catch (error) {
             console.error('Auth check failed: ', error);
+            // Clear corrupted data
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            setIsAuthenticated(false);
         } finally {
             setLoading(false);
         }
@@ -51,7 +59,6 @@ export const AuthProvider = ({ children }) => {
 
         setUser(null);
         setIsAuthenticated(false);
-        window.location.href = '/';
     };
 
     const updateUser = (updatedUserData) => {

@@ -1,18 +1,18 @@
 import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import AppLayout from '../layout/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }) => {
     const {isAuthenticated, loading} = useAuth()
 
     if(loading){
-        return <div style={{backgroundColor: "#000000", color: "white"}}>Loading...</div>
+        return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading...</div>
     }
 
     return isAuthenticated ? (
         <AppLayout>
-            <Outlet />
+            {children}
         </AppLayout>
     ) : (
         <Navigate to="/login" replace />

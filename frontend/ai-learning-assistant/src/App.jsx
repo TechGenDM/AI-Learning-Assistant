@@ -13,14 +13,18 @@ import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import { useAuth } from './context/AuthContext';
+import PublicRoute from './components/auth/PublicRoute';
  
 const App = () => {
-  const {isAuthenticated, loading} = useAuth()
+  const { loading } = useAuth()
 
   if (loading) {
     return (
-      <div className=''>
-        <p>Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f7fb]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-500 font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -30,28 +34,97 @@ const App = () => {
       <Routes>
         <Route
           path="/"
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace /> }
+          element={<RootRedirect />}
         />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/documents" element={<DocumentsListPage />} />
-          <Route path="/documents/:id" element={<DocumentDetailPage />} />
-          <Route path="/flashcards" element={<FlashcardsListPage />} />
-          <Route path="/documents/:id/flashcards" element={<FlashcardPage />} />
-          <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
-          <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Route>
+        {/* Public routes - redirect to dashboard if already logged in */}
+        <Route path="/login" element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        } />
+        <Route path="/register" element={
+          <PublicRoute>
+            <RegisterPage />
+          </PublicRoute>
+        } />
 
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+            <ProtectedRoute>
+              <DocumentsListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents/:id"
+          element={
+            <ProtectedRoute>
+              <DocumentDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flashcards"
+          element={
+            <ProtectedRoute>
+              <FlashcardsListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents/:id/flashcards"
+          element={
+            <ProtectedRoute>
+              <FlashcardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quizzes/:quizId"
+          element={
+            <ProtectedRoute>
+              <QuizTakePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quizzes/:quizId/results"
+          element={
+            <ProtectedRoute>
+              <QuizResultPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   )
 }
+
+// Separate component for root redirect to avoid hook issues
+const RootRedirect = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+};
 
 export default App

@@ -1,0 +1,27 @@
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
+const PublicRoute = ({ children }) => {
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#f5f7fb]">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-sm text-gray-500 font-medium">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // If user is already authenticated, redirect to dashboard
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    return children;
+};
+
+export default PublicRoute;
