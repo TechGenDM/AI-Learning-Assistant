@@ -17,6 +17,7 @@ import Tabs from '../../components/common/Tabs';
 import ChatInterface from '../../components/chat/ChatInterface';
 import AIActions from '../../components/ai/AIActions';
 import FlashcardManager from '../../components/flashcards/FlashcardManager';
+import QuizManager from '../../components/quizzes/QuizManager';
 
 const formatFileSize = (bytes) => {
     if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A';
@@ -167,12 +168,8 @@ const DocumentDetailPage = () => {
         )}
 
         {activeTab === 'quizzes' && (
-          <div className="animate-in fade-in duration-300 text-center py-24 bg-white rounded-[20px] shadow-sm border border-[#f0f2f5]">
-            <div className="mx-auto w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-              <FileQuestion size={30} className="text-[#0cd09f]" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-800">Quizzes integration pending</h3>
-            <p className="text-sm text-gray-500 mt-2">Your interactive quizzes will appear here.</p>
+          <div className="animate-in fade-in duration-300">
+            <QuizManager documentId={doc._id} />
           </div>
         )}
       </div>

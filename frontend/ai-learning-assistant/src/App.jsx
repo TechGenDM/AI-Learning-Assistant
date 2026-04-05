@@ -7,10 +7,6 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import DocumentsListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
-import FlashcardsListPage from './pages/Flashcards/FlashcardsListPage';
-import FlashcardPage from './pages/Flashcards/FlashcardPage';
-import QuizTakePage from './pages/Quizzes/QuizTakePage';
-import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import { useAuth } from './context/AuthContext';
 import PublicRoute from './components/auth/PublicRoute';
@@ -71,38 +67,6 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DocumentDetailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/flashcards"
-          element={
-            <ProtectedRoute>
-              <FlashcardsListPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/documents/:id/flashcards"
-          element={
-            <ProtectedRoute>
-              <FlashcardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/quizzes/:quizId"
-          element={
-            <ProtectedRoute>
-              <QuizTakePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/quizzes/:quizId/results"
-          element={
-            <ProtectedRoute>
-              <QuizResultPage />
             </ProtectedRoute>
           }
         />

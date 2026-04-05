@@ -3,8 +3,7 @@ import { Brain, Plus, LayoutGrid, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import flashcardService from '../../services/flashcardService';
 import aiService from '../../services/aiService';
-import Flashcard from './Flashcard';
-import Modal from '../common/Modal';
+import FlashcardViewer from './FlashcardViewer';
 import Spinner from '../common/Spinner';
 
 const FlashcardManager = ({ documentId }) => {
@@ -94,7 +93,14 @@ const FlashcardManager = ({ documentId }) => {
 
   return (
     <div className="animate-in fade-in duration-300">
-      {flashcardSets.length === 0 ? (
+      {/* Study View */}
+      {selectedSet ? (
+        <FlashcardViewer 
+          set={selectedSet} 
+          onBack={() => setSelectedSet(null)} 
+          onToggleStar={handleToggleStar} 
+        />
+      ) : flashcardSets.length === 0 ? (
         <div className="text-center py-20 px-4 bg-white rounded-[24px] shadow-sm border border-[#f0f2f5]">
           <div className="mx-auto w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 text-[#0cd09f]">
             <Brain size={32} />
@@ -177,27 +183,6 @@ const FlashcardManager = ({ documentId }) => {
           </div>
         </div>
       )}
-
-      {/* Study Modal */}
-      <Modal
-        isOpen={!!selectedSet}
-        onClose={() => setSelectedSet(null)}
-        title="Study Flashcards"
-      >
-        <div className="bg-gray-50/50 -m-6 p-6 min-h-[400px]">
-          {selectedSet && (
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6">
-               {selectedSet.cards.map(card => (
-                 <Flashcard 
-                   key={card._id} 
-                   flashcard={card} 
-                   onToggleStar={handleToggleStar} 
-                 />
-               ))}
-             </div>
-          )}
-        </div>
-      </Modal>
     </div>
   );
 };

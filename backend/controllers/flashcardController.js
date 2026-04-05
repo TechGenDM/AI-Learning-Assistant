@@ -5,7 +5,7 @@ import Flashcard from "../models/Flashcard.js";
 // @access Private
 export const getFlashcards = async (req, res, next) => {
     try{
-        const flashcards = await Flashcard.findOne({
+        const flashcards = await Flashcard.find({
             userId: req.user.id,
             documentId: req.params.documentId
         }).populate('documentId', 'title')
@@ -13,7 +13,7 @@ export const getFlashcards = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            count: flashcards ? 1 : 0,
+            count: flashcards.length,
             data: flashcards
         });
     } catch (error){

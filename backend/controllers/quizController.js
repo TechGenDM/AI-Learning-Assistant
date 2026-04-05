@@ -5,7 +5,10 @@ import Quiz from "../models/Quiz.js";
 // @access Private
 export const getQuizzes = async (req, res) => {
     try {
-        const quizzes = await Quiz.find({ userId: req.user.id })
+        const quizzes = await Quiz.find({ 
+            userId: req.user.id,
+            documentId: req.params.documentId
+        })
             .populate('documentId', 'title')
             .select('-questions.correctAnswer -questions.explanation')
             .sort({ createdAt: -1 });
