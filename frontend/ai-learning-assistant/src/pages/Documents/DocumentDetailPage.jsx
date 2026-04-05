@@ -16,6 +16,7 @@ import PageHeader from '../../components/common/PageHeader';
 import Tabs from '../../components/common/Tabs';
 import ChatInterface from '../../components/chat/ChatInterface';
 import AIActions from '../../components/ai/AIActions';
+import FlashcardManager from '../../components/flashcards/FlashcardManager';
 
 const formatFileSize = (bytes) => {
     if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A';
@@ -160,12 +161,8 @@ const DocumentDetailPage = () => {
         )}
 
         {activeTab === 'flashcards' && (
-          <div className="animate-in fade-in duration-300 text-center py-24 bg-white rounded-[20px] shadow-sm border border-[#f0f2f5]">
-            <div className="mx-auto w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4">
-              <BookOpen size={30} className="text-purple-500" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-800">Flashcards integration pending</h3>
-            <p className="text-sm text-gray-500 mt-2">Your flashcard sets will appear here.</p>
+          <div className="animate-in fade-in duration-300">
+            <FlashcardManager documentId={doc._id} />
           </div>
         )}
 

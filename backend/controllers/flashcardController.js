@@ -13,7 +13,7 @@ export const getFlashcards = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            count: flashcards.length,
+            count: flashcards ? 1 : 0,
             data: flashcards
         });
     } catch (error){

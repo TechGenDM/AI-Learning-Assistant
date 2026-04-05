@@ -1,10 +1,9 @@
-import axios from "axios";
 import { API_PATHS } from "../utils/apiPaths";
 import axiosInstance from "../utils/axiosInstance";
 
-const getFlashcardSets = async (documentId) => {
+const getFlashcardSets = async () => {
     try {
-        const response = await axios.get(API_PATHS.FLASHCARDS.GET_FLASHCARDS(documentId));
+        const response = await axiosInstance.get(API_PATHS.FLASHCARDS.GET_ALL_FLASHCARD_SETS);
         return response.data;
     } catch (error) {
         throw error.response?.data || { message: 'Failed to get flashcards' };
@@ -13,7 +12,7 @@ const getFlashcardSets = async (documentId) => {
 
 const getFlashcardsForDocument = async (documentId) => {
     try {
-        const response = await axios.get(API_PATHS.FLASHCARDS.GET_FLASHCARDS_FOR_DOCUMENT(documentId));
+        const response = await axiosInstance.get(API_PATHS.FLASHCARDS.GET_FLASHCARDS_FOR_DOC(documentId));
         return response.data;
     } catch (error) {
         throw error.response?.data || { message: 'Failed to get flashcards for document' };
@@ -22,7 +21,7 @@ const getFlashcardsForDocument = async (documentId) => {
 
 const reviewFlashcard = async (cardId, reviewData) => {
     try {
-        const response = await axios.post(API_PATHS.FLASHCARDS.REVIEW_FLASHCARDS(cardId), reviewData);
+        const response = await axiosInstance.post(API_PATHS.FLASHCARDS.REVIEW_FLASHCARDS(cardId), reviewData);
         return response.data;
     } catch (error) {
         throw error.response?.data || { message: 'Failed to review flashcard' };
@@ -31,7 +30,7 @@ const reviewFlashcard = async (cardId, reviewData) => {
 
 const toggleStar = async (cardId) => {
     try {
-        const response = await axios.post(API_PATHS.FLASHCARDS.TOGGLE_STAR(cardId));
+        const response = await axiosInstance.put(API_PATHS.FLASHCARDS.TOGGLE_STAR(cardId));
         return response.data;
     } catch (error) {
         throw error.response?.data || { message: 'Failed to toggle star' };
