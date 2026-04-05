@@ -27,7 +27,7 @@ connectDB();
 // Middleware to handle CORS
 app.use(
     cors({
-        origin: "*",
+        origin: process.env.CLIENT_URL || process.env.VITE_API_URL || "*",
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
@@ -50,23 +50,40 @@ app.use('/api/progress', progressRoutes);
 
 app.use(errorHandler);
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        success: false, 
-        error: 'Route not found',
-        statusCode: 404
-    })
-})
+// Serve frontend in production (VPS / Render Single-Instance)
+if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+    const frontendDist = path.join(__dirname, '../frontend/ai-learning-assistant/dist');
+    app.use(express.static(frontendDist));
 
-// Start server
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+} else {
+    // 404 handler for API routes or local development
+    app.use((req, res) => {
+        res.status(404).json({
+            success: false, 
+            error: 'Route not found',
+            statusCode: 404
+        });
+    });
+}
+
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+
+// Export the app for Vercel
+export default app;
+
+// Only start the server if this file is run directly
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    });
+}
 
 process.on('unhandledRejection', (err) => {
     console.log(`Error: ${err.message}`);
     process.exit(1);
 });
+
 

@@ -2,12 +2,16 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const uploadDir = path.join(__dirname, '../uploads/documents');
-if(!fs.existsSync(uploadDir)){
+// Use /tmp on Vercel/Production because the file system is read-only
+const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+const uploadDir = isVercel ? os.tmpdir() : path.join(__dirname, '../uploads/documents');
+
+if(!isVercel && !fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir, {recursive: true});
 }
 

@@ -30,7 +30,9 @@ export const uploadDocument = async (req, res, next) => {
         }
 
         // Construct the URL for the uploaded file
-        const baseUrl = `http://localhost:${process.env.PORT || 8000}`;
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const baseUrl = process.env.BASE_URL || `${protocol}://${host}`;
         const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`;
 
 
@@ -44,16 +46,26 @@ export const uploadDocument = async (req, res, next) => {
             status: 'processing'
         });
         
-        // Process PDF in background (in production, use a queue like Bull)
-        processPDF(document._id, req.file.path).catch(err => {
+        // Process PDF synchronously for serverless environments
+        try {
+            await processPDF(document._id, req.file.path);
+            
+            // Re-fetch document to get the updated status and text if needed in frontend
+            const updatedDocument = await Document.findById(document._id);
+            
+            res.status(201).json({
+                success: true, 
+                data: updatedDocument || document,
+                message: 'Document uploaded and processed successfully.'
+            });
+        } catch (err) {
             console.error('PDF processing error:', err);
-        });
-
-        res.status(201).json({
-            success: true, 
-            data: document,
-            message: 'Document uploaded successfully. Processing in progress...'
-        })
+            res.status(201).json({
+                success: true, 
+                data: document,
+                message: 'Document uploaded but processing failed.'
+            });
+        }
     } catch (error) {
         // Clean up file on error
         if(req.file){
@@ -201,7 +213,8 @@ export const deleteDocument = async (req, res, next) => {
         // Delete file from filesystem
         try {
             const filename = document.filePath.split('/').pop();
-            const localPath = path.join(process.cwd(), 'uploads', 'documents', filename);
+            const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+            const localPath = isVercel ? path.join('/tmp', filename) : path.join(process.cwd(), 'uploads', 'documents', filename);
             await fs.unlink(localPath);
         } catch (e) {
             console.error('File deletion error:', e);

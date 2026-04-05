@@ -1,4 +1,5 @@
-export const BASE_URL = "http://localhost:8000";
+// Use VITE_API_URL if provided, else use relative path in production, or localhost in development
+export const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:8000");
 
 export const API_PATHS = {
     AUTH: {
