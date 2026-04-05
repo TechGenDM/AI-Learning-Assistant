@@ -15,6 +15,7 @@ import Button from '../../components/common/Button';
 import PageHeader from '../../components/common/PageHeader';
 import Tabs from '../../components/common/Tabs';
 import ChatInterface from '../../components/chat/ChatInterface';
+import AIActions from '../../components/ai/AIActions';
 
 const formatFileSize = (bytes) => {
     if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A';
@@ -133,16 +134,9 @@ const DocumentDetailPage = () => {
         )}
 
         {activeTab === 'ai_actions' && (
-          <div className="animate-in fade-in duration-300 bg-white rounded-[20px] p-6 lg:p-8 shadow-sm border border-[#f0f2f5] min-h-[400px]">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                <BrainCircuit className="text-[#0cd09f]" size={20} />
-              </div>
-              <h2 className="text-xl font-bold text-gray-800">AI Document Insights</h2>
-            </div>
-            
+          <div className="animate-in fade-in duration-300">
             {!doc.extractedText && doc.status === 'processing' ? (
-              <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-gray-50/50 rounded-2xl border border-gray-100 border-dashed">
+              <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-white rounded-[24px] shadow-sm border border-[#f0f2f5] border-dashed">
                 <Spinner />
                 <p className="mt-4 text-gray-600 font-medium">Analyzing document contents</p>
                 <p className="text-sm text-gray-400 mt-1">This might take a few moments depending on the file size.</p>
@@ -153,23 +147,7 @@ const DocumentDetailPage = () => {
                 <p className="text-sm font-medium">Text extraction failed or was incomplete for this document. AI features might be limited.</p>
               </div>
             ) : (
-               <div className="space-y-6">
-                 <div className="p-6 bg-gray-50 rounded-[16px] border border-gray-100">
-                   <h3 className="text-[15px] font-bold text-gray-700 mb-3 flex items-center gap-2">
-                     <Sparkles size={16} className="text-[#0cd09f]" /> AI Summary
-                   </h3>
-                   <div className="text-[14px] leading-relaxed text-gray-600">
-                     {doc.summary ? (
-                        <p>{doc.summary}</p>
-                     ) : (
-                        <div className="text-center py-8">
-                           <p className="text-gray-400 mb-4">No summary generated yet.</p>
-                           <Button onClick={handleGenerateSummary} loading={isGeneratingSum} className="bg-white border hover:bg-gray-50 border-gray-200 text-gray-700 rounded-xl text-sm px-4 py-2" style={{color: '#374151'}}>Generate Summary Now</Button>
-                        </div>
-                     )}
-                   </div>
-                 </div>
-               </div>
+               <AIActions documentId={doc._id} />
             )}
           </div>
         )}
