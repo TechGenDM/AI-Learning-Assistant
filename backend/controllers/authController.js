@@ -123,14 +123,15 @@ export const getProfile = async (req, res, next) => {
     }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
 export const updateProfile = async (req, res, next) => {
     try {
-        const {username, email} = req.body;
+        const {username, email, profileImage} = req.body;
 
         const user = await User.findById(req.user.id);
+
+        if(!user) {
+            return res.status(404).json({ success: false, error: "User not found", statusCode: 404});
+        }
 
         if(username) user.username = username;
         if(email) user.email = email;
