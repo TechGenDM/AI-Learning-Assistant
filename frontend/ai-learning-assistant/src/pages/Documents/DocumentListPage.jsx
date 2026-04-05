@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import documentService from '../../services/documentService';
 import Spinner from "../../components/common/Spinner";
 import Button from "../../components/common/Button";
+import DocumentCard from "../../components/documents/DocumentCard";
 
 
 const DocumentListPage = () => {
@@ -24,8 +25,8 @@ const DocumentListPage = () => {
 
   const fetchDocuments = async () => {
     try {
-      const data = await documentService.getAllDocuments();
-      setDocuments(data);
+      const response = await documentService.getDocuments();
+      setDocuments(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch documents');
       console.error(error);
@@ -102,12 +103,23 @@ const DocumentListPage = () => {
   return (
     <div className="w-full max-w-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-[30px] font-semibold text-gray-800">Documents</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage and view all your uploaded materials</p>
+          <h1 className="text-[28px] font-semibold text-gray-800 leading-tight">My Documents</h1>
+          <p className="text-[14px] text-gray-500 mt-1.5">Manage and organize your learning materials</p>
         </div>
-        <Button onClick={() => setIsUploadModalOpen(true)} icon={Upload}>
+        <Button 
+          onClick={() => setIsUploadModalOpen(true)} 
+          icon={Plus}
+          className="bg-[#0cd09f] hover:bg-[#0bc193] text-white rounded-full px-6 py-[10px] font-medium border-0 shadow-sm"
+          style={{ 
+            backgroundImage: 'none', 
+            backgroundColor: '#0cd09f', 
+            borderRadius: '9999px', 
+            border: 'none',
+            color: 'white'
+          }}
+        >
           Upload Document
         </Button>
       </div>
@@ -132,34 +144,7 @@ const DocumentListPage = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {documents.map((doc) => (
-            <div
-              key={doc._id}
-              className="group bg-white rounded-2xl border border-[#edf1f6] hover:border-emerald-200 p-5 shadow-[0_3px_10px_rgba(15,23,42,0.04)] hover:shadow-lg transition-all duration-300 relative overflow-hidden flex flex-col"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
-                  <FileText size={24} />
-                </div>
-                <button
-                  onClick={() => handleDeleteRequest(doc)}
-                  className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-              
-              <h3 className="font-semibold text-gray-800 text-lg mb-1 line-clamp-1" title={doc.title}>
-                {doc.title}
-              </h3>
-              <p className="text-sm text-gray-500 mb-4 line-clamp-1 flex-1" title={doc.fileName}>
-                {doc.fileName || "Unknown file"}
-              </p>
-
-              <div className="pt-4 border-t border-[#edf1f6] flex items-center justify-between text-xs text-gray-400">
-                <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
-                {doc.fileSize && <span>{(doc.fileSize / 1024 / 1024).toFixed(2)} MB</span>}
-              </div>
-            </div>
+            <DocumentCard key={doc._id} doc={doc} onDelete={handleDeleteRequest} />
           ))}
         </div>
       )}
@@ -167,9 +152,12 @@ const DocumentListPage = () => {
       {/* Upload Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-gray-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-800">Upload Document</h2>
+          <div className="bg-white rounded-[20px] shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start justify-between px-6 pt-6 pb-2">
+              <div>
+                <h2 className="text-xl font-medium text-gray-800">Upload New Document</h2>
+                <p className="text-sm text-gray-500 mt-1">Add a PDF document to your library</p>
+              </div>
               <button
                 onClick={() => {
                   setIsUploadModalOpen(false);
@@ -184,51 +172,64 @@ const DocumentListPage = () => {
             </div>
             
             <form onSubmit={handleUpload} className="p-6">
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 tracking-wider uppercase mb-2">
-                    Document Title
+                    DOCUMENT TITLE
                   </label>
                   <input
                     type="text"
                     value={uploadTitle}
                     onChange={(e) => setUploadTitle(e.target.value)}
-                    placeholder="E.g. React Fundamentals"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 transition-all duration-200"
+                    placeholder="e.g., React Interview Prep"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 transition-all duration-200"
                     required
                   />
                 </div>
                 
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 tracking-wider uppercase mb-2">
-                    File
+                    PDF FILE
                   </label>
-                  <div className="relative">
+                  <div className="relative border-2 border-dashed border-emerald-300 rounded-xl hover:bg-emerald-50/50 transition-colors duration-200 bg-white">
                     <input
                       type="file"
                       onChange={handleFileChange}
-                      className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2.5 file:px-4
-                        file:rounded-xl file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-emerald-50 file:text-emerald-600
-                        hover:file:bg-emerald-100 file:transition-colors
-                        border border-gray-200 rounded-xl cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                      accept=".pdf"
+                      title=""
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       required
                     />
+                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                      <div className="w-12 h-12 mb-3 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
+                        <Upload size={24} />
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {uploadFile ? (
+                          <span className="font-medium text-emerald-600">{uploadFile.name}</span>
+                        ) : (
+                          <><span className="text-emerald-600 font-medium">Click to upload</span> or drag and drop</>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        PDF up to 10MB
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-2">
-                    Supported formats: PDF, TXT, DOCX. Max size: 10MB.
-                  </p>
                 </div>
               </div>
 
               <div className="mt-8 flex gap-3">
                 <Button
-                  variant="outline"
+                  type="button"
                   onClick={() => setIsUploadModalOpen(false)}
                   disabled={uploading}
-                  className="flex-1"
+                  className="flex-1 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                  style={{
+                    backgroundColor: 'white',
+                    color: '#374151',
+                    border: '1px solid #E5E7EB'
+                  }}
                 >
                   Cancel
                 </Button>
@@ -236,8 +237,14 @@ const DocumentListPage = () => {
                   type="submit"
                   disabled={uploading || !uploadFile || !uploadTitle}
                   loading={uploading}
-                  icon={Upload}
-                  className="flex-1"
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white border-0"
+                  style={{
+                    backgroundColor: '#10B981',
+                    color: 'white',
+                    border: 'none',
+                    display: 'flex',
+                    justifyContent: 'center'
+                  }}
                 >
                   {uploading ? 'Uploading...' : 'Upload'}
                 </Button>

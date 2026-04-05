@@ -28,9 +28,19 @@ export const getDashboard = async (req, res, next) => {
         });
 
         // Get quiz statistics 
-        const quizzes = await Quiz.find({userId, completedAt: {$ne: null}}).sort({completedAt: -1}).limit(5).select('title fileName lastAccessed status');
+        const quizzes = await Quiz.find({userId, completedAt: {$ne: null}}).sort({completedAt: -1}).limit(5).select('title score totalQuestions lastAccessed status');
 
-        const recentQuizzes = await Quiz.find({userId}).sort({createdAt: -1}).limit(5).populate('documentId', 'title').select('title fileName lastAccessed status');
+        const recentQuizzes = await Quiz.find({userId}).sort({createdAt: -1}).limit(5).populate('documentId', 'title').select('title score totalQuestions lastAccessed status createdAt');
+
+        const recentDocuments = await Document.find({userId}).sort({createdAt: -1}).limit(5).select('title filename lastAccessed status createdAt');
+
+        const allCompletedQuizzes = await Quiz.find({userId, completedAt: {$ne: null}});
+        let totalScorePercentage = 0;
+        allCompletedQuizzes.forEach(q => {
+            const percentage = (q.totalQuestions && q.totalQuestions > 0) ? (q.score / q.totalQuestions) * 100 : 0;
+            totalScorePercentage += percentage;
+        });
+        const averageScore = completedQuizzes > 0 ? Math.round(totalScorePercentage / completedQuizzes) : 0;
 
         // Study streak (simplified - in production, track daily activity)
         const studyStreak = Math.floor(Math.random() * 7) + 1;

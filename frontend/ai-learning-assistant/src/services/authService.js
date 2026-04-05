@@ -6,7 +6,8 @@ const login = async (email, password) => {
         const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {email, password});
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: 'An unknown error occurred' };
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
+        throw new Error(errorMessage);
     }
 };
 
@@ -15,7 +16,8 @@ const register = async (username, email, password) => {
         const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {username, email, password});
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: 'An unknown error occurred' };
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
+        throw new Error(errorMessage);
     }
 };
 
@@ -24,7 +26,8 @@ const getProfile = async () => {
         const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: 'An unknown error occurred' };
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
+        throw new Error(errorMessage);
     }
 };
 
@@ -33,7 +36,8 @@ const updateProfile = async (profileData) => {
         const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, profileData);
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: 'An unknown error occurred' };
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
+        throw new Error(errorMessage);
     }
 };
 
@@ -42,7 +46,8 @@ const changePassword = async (currentPassword, newPassword) => {
         const response = await axiosInstance.put(API_PATHS.AUTH.CHANGE_PASSWORD, {currentPassword, newPassword});
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: 'An unknown error occurred' };
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
+        throw new Error(errorMessage);
     }
 };
 

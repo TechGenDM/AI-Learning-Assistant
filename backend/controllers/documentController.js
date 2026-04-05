@@ -4,7 +4,8 @@ import Flashcard from '../models/Flashcard.js';
 import Quiz from '../models/Quiz.js';
 import { extractTextFromPDF } from '../utils/pdfParser.js';
 import { chunkText } from '../utils/textChunker.js';
-import fs from 'fs';
+import fs from 'fs/promises';
+import path from 'path';
 import mongoose from 'mongoose';
 
 // @desc Upload PDF document
@@ -111,14 +112,6 @@ export const getDocuments = async (req, res, next) => {
                 }
             },
             {
-                $lookup: {
-                    from: 'quizzes',
-                    localField: '_id',
-                    foreignField: 'documentId',
-                    as: 'quizzes'
-                }
-            },
-            {
                 $addFields: {
                     flashcardCounts: { $size: '$flashcardSets'},
                     quizCounts: { $size: '$quizzes'}
@@ -176,7 +169,7 @@ export const getDocument = async (req, res, next) => {
         // Combine document data with counts
         const documentData = document.toObject();
         documentData.flashcardCount = flashcardCount;
-        documentData.quizCount = quizCounts;
+        documentData.quizCount = quizCount;
 
         res.status(200).json({
             success: true,
@@ -206,7 +199,13 @@ export const deleteDocument = async (req, res, next) => {
         }
 
         // Delete file from filesystem
-        await fs.unlink(document.filePath).catch(() => {});
+        try {
+            const filename = document.filePath.split('/').pop();
+            const localPath = path.join(process.cwd(), 'uploads', 'documents', filename);
+            await fs.unlink(localPath);
+        } catch (e) {
+            console.error('File deletion error:', e);
+        }
 
         // Delete document
         await document.deleteOne();
