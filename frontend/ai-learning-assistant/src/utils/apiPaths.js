@@ -18,12 +18,12 @@ export const API_PATHS = {
     },
 
     AI: {
-        GENERATE_FLASHCARD: "/api/ai/generate-flashcard",
-        GENERATE_QUIZ: "/api/ai/generate-quiz",
-        GENERATE_SUMMARY: "/api/ai/generate-summary",
+        GENERATE_FLASHCARD: "/api/ai/flashcards",
+        GENERATE_QUIZ: "/api/ai/quiz",
+        GENERATE_SUMMARY: "/api/ai/summary",
         CHAT: "/api/ai/chat",
-        EXPLAIN_CONCEPT: "/api/ai/explain-concept",
-        GET_CHAT_HISTORY: (documentId) => `/api/ai/chat/history/${documentId}`,
+        EXPLAIN_CONCEPT: "/api/ai/explain",
+        GET_CHAT_HISTORY: (documentId) => `/api/ai/chat-history/${documentId}`,
     },
 
     FLASHCARDS: {

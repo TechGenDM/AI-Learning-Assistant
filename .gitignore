@@ -1,0 +1,4 @@
+backend/.env
+backend/node_modules
+frontend/ai-learning-assistant/node_modules
+.DS_Store

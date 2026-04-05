@@ -11,10 +11,10 @@ export const extractTextFromPDF = async (filePath) => {
     try {
         const dataBuffer = await fs.readFile(filePath);
         parser = new PDFParse({ data: dataBuffer });
-        
+
         const textResult = await parser.getText();
         const infoResult = await parser.getInfo();
-        
+
         return {
             text: textResult.text,
             numPages: infoResult.total || 0,
@@ -25,7 +25,7 @@ export const extractTextFromPDF = async (filePath) => {
         throw new Error("Failed to parse PDF file");
     } finally {
         if (parser) {
-            await parser.destroy().catch(() => {});
+            await parser.destroy().catch(() => { });
         }
     }
 };

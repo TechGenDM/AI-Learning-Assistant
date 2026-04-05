@@ -14,6 +14,7 @@ import Spinner from '../../components/common/Spinner';
 import Button from '../../components/common/Button';
 import PageHeader from '../../components/common/PageHeader';
 import Tabs from '../../components/common/Tabs';
+import ChatInterface from '../../components/chat/ChatInterface';
 
 const formatFileSize = (bytes) => {
     if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A';
@@ -175,12 +176,8 @@ const DocumentDetailPage = () => {
 
         {/* Temporary placeholders for other tabs */}
         {activeTab === 'chat' && (
-          <div className="animate-in fade-in duration-300 text-center py-24 bg-white rounded-[20px] shadow-sm border border-[#f0f2f5]">
-            <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-              <MessageSquare size={30} className="text-blue-500" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-800">Interactive Chat</h3>
-            <p className="text-sm text-gray-500 mt-2">Chat interface will appear here.</p>
+          <div className="animate-in fade-in duration-300">
+            <ChatInterface documentId={doc._id} />
           </div>
         )}
 
