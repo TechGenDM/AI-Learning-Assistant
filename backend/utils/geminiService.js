@@ -32,6 +32,7 @@ ${text.substring(0, 15000)}`;
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
+      config: { thinkingConfig: { thinkingBudget: 0 } },
     });
 
     const generatedText = response.text;
@@ -96,6 +97,7 @@ ${text.substring(0, 15000)}`;
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
+      config: { thinkingConfig: { thinkingBudget: 0 } },
     });
 
     const generatedText = response.text;
@@ -153,6 +155,7 @@ ${text.substring(0, 20000)}`;
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
+      config: { thinkingConfig: { thinkingBudget: 0 } },
     });
 
     const generatedText = response.text;
@@ -172,23 +175,40 @@ ${text.substring(0, 20000)}`;
 export const chatWithContext = async (question, chunks) => {
   const context = chunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join('\n\n');
 
-  const prompt = `Based on the following context from a document, analyse the context and answer the user's question. If the answer is not in the context, say so.
+  const prompt = `You are a helpful AI learning assistant and tutor. You have access to the following content from a document the student uploaded.
 
-Context:
+Your responsibilities:
+- If the student asks you to solve a problem or question found in the document, **solve it step by step with a clear, detailed solution**.
+- If the student asks you to explain a concept, provide a clear and thorough explanation with examples.
+- If the student asks to summarize, provide a well-structured summary.
+- Use the document context to give accurate, relevant answers.
+- Use your own knowledge to supplement the document content when needed (e.g., to solve math problems, explain formulas, etc.).
+
+Formatting rules:
+- Use clean Markdown formatting (headings, bold, lists, code blocks).
+- For math, write equations in plain text (e.g., "x = (-b ± sqrt(b²-4ac)) / 2a") instead of LaTeX notation.
+- Keep your response well-structured and easy to read.
+
+Document Context:
 ${context}
 
-Question: ${question}
+Student's Question: ${question}
 
-Answer:`;
+Your Answer:`;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
+      config: {
+        thinkingConfig: { thinkingBudget: 0 },
+      },
     });
 
-    const generatedText = response.text;
-    return generatedText;
+    // Extract only non-thought text parts
+    const parts = response.candidates?.[0]?.content?.parts || [];
+    const textParts = parts.filter(p => !p.thought).map(p => p.text).join('');
+    return textParts || response.text || 'No response generated.';
   } catch (error) {
     console.error('Gemini API error:', error);
     throw new Error('Failed to process chat request');
@@ -212,10 +232,12 @@ ${context.substring(0, 10000)}`;
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
+      config: { thinkingConfig: { thinkingBudget: 0 } },
     });
 
-    const generatedText = response.text;
-    return generatedText;
+    const parts = response.candidates?.[0]?.content?.parts || [];
+    const textParts = parts.filter(p => !p.thought).map(p => p.text).join('');
+    return textParts || response.text || 'No explanation generated.';
   } catch (error) {
     console.error('Gemini API error:', error);
     throw new Error('Failed to explain concept');
