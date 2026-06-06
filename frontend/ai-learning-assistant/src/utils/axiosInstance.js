@@ -29,7 +29,15 @@ axiosInstance.interceptors.response.use(
     (response) => {return response;},
     (error) => {
         if(error.response) {
-            if (error.response.status === 500){
+            if (error.response.status === 401) {
+                // Token expired or unauthorized
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                // Only redirect if we're not already on the login page to avoid loops
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
+            } else if (error.response.status === 500){
                 console.error("Server Error: ", error.response.data.message);
             }
         } else if (error.code === "ECONNABORTED"){

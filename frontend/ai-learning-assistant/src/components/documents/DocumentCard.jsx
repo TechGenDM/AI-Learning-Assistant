@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Trash2, Clock, BookOpen, Target } from 'lucide-react';
+import { FileText, Trash2, BookOpen, Zap, Clock } from 'lucide-react';
 import moment from 'moment';
 
 const formatFileSize = (bytes) => {
@@ -17,41 +17,91 @@ const formatFileSize = (bytes) => {
 
 const DocumentCard = ({ doc, onDelete }) => {
     return (
-        <div className="relative group">
+        <div className="relative group rounded-2xl overflow-hidden bg-white transition-all duration-200 cursor-pointer"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)" }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)";
+                e.currentTarget.style.transform = "translateY(0)";
+            }}
+        >
+            {/* Delete button */}
             <button
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onDelete(doc);
                 }}
-                className="absolute top-5 right-5 text-gray-400 hover:text-red-500 p-2 rounded-xl hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 bg-white z-10"
+                className="absolute top-3 right-3 text-white/70 hover:text-white hover:bg-white/20 p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100 z-10 cursor-pointer"
                 title="Delete document"
             >
-                <Trash2 size={18} />
+                <Trash2 size={15} />
             </button>
-            <Link to={`/documents/${doc._id}`} className="block bg-white rounded-[24px] p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-[#f0f2f5] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300">
-                <div className="mb-6">
-                    <div className="w-[52px] h-[52px] bg-[#0cd09f] rounded-[16px] flex items-center justify-center mb-5">
-                        <FileText className="text-white" size={26} strokeWidth={1.5} />
-                    </div>
-                    <h3 className="text-[17px] font-semibold text-gray-800 mb-1.5 leading-tight line-clamp-1">{doc.title}</h3>
-                    <p className="text-[13px] text-gray-500 font-medium">{formatFileSize(doc.fileSize || doc.size)}</p>
-                </div>
-                
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 rounded-[10px]">
-                        <BookOpen className="text-purple-600" size={14} />
-                        <span className="text-[13px] font-semibold text-purple-700">{doc.flashcardCounts || doc.flashcardsCount || doc.flashcardCount || 0} Flashcards</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 rounded-[10px]">
-                        <Target className="text-[#0cd09f]" size={14} />
-                        <span className="text-[13px] font-semibold text-[#0cd09f]">{doc.quizCounts || doc.quizzesCount || doc.quizCount || 0} Quizzes</span>
+
+            <Link to={`/documents/${doc._id}`} className="block">
+                {/* Gradient Banner Header */}
+                <div
+                    className="relative flex items-center justify-center group-hover:opacity-90 transition-opacity"
+                    style={{
+                        height: "90px",
+                        background: "linear-gradient(135deg, #10B981 0%, #059669 60%, #047857 100%)",
+                    }}
+                >
+                    <div
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                        style={{ background: "rgba(255,255,255,0.2)", backdropFilter: "blur(4px)" }}
+                    >
+                        <FileText className="text-white" size={24} strokeWidth={1.5} />
                     </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-100 flex items-center gap-2 text-gray-500">
-                    <Clock size={16} className="text-gray-400" />
-                    <span className="text-[13px]">Uploaded {moment(doc.uploadDate || doc.createdAt).fromNow()}</span>
+                {/* Card Body */}
+                <div className="p-5">
+                    {/* Title & size */}
+                    <h3 className="text-[16px] font-bold text-[#111827] mb-1 leading-tight line-clamp-1">
+                        {doc.title}
+                    </h3>
+                    <p className="text-[13px] text-[#9CA3AF] mb-4">
+                        {formatFileSize(doc.fileSize || doc.size)}
+                    </p>
+
+                    {/* Badges */}
+                    <div className="flex items-center gap-2 mb-4">
+                        <div
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+                            style={{ background: "#F3E8FF", color: "#7C3AED" }}
+                        >
+                            <BookOpen size={12} />
+                            <span className="text-[12px] font-semibold">
+                                {doc.flashcardCounts || doc.flashcardsCount || doc.flashcardCount || 0} Flashcards
+                            </span>
+                        </div>
+                        <div
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+                            style={{ background: "#FEF3C7", color: "#D97706" }}
+                        >
+                            <Zap size={12} />
+                            <span className="text-[12px] font-semibold">
+                                {doc.quizCounts || doc.quizzesCount || doc.quizCount || 0} Quizzes
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-3 border-t border-[#F3F4F6]">
+                        <div className="flex items-center gap-1.5 text-[#9CA3AF]">
+                            <Clock size={12} />
+                            <span className="text-[12px]">
+                                {moment(doc.uploadDate || doc.createdAt).fromNow()}
+                            </span>
+                        </div>
+                        <span className="text-[13px] font-semibold text-[#10B981] hover:text-[#059669] transition-colors">
+                            Open →
+                        </span>
+                    </div>
                 </div>
             </Link>
         </div>

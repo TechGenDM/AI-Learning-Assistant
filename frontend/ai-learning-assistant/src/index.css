@@ -1,8 +1,148 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-display: "Urbanist", sans-serif;
+  --font-sans: "Inter", "Urbanist", sans-serif;
   --breakpoint-3xl: 1920px;
-  --color-primary: #FF9324;
+  --color-primary: #10B981;
+  --color-teal-brand: #10B981;
+  --color-teal-dark: #059669;
+  --color-teal-light: #F0FDF4;
+  --color-bg-app: #F8F7F4;
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Urbanist', sans-serif;
+  background-color: #F8F7F4;
+  color: #374151;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Global Focus Ring (Accessibility) ─── */
+*:focus-visible {
+  outline: 2px solid #10B981;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─── Interactive Elements Cursor ─── */
+button, a, [role="button"] {
+  cursor: pointer;
+}
+
+/* ─── Page Fade-in Transition ─── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.2s ease forwards;
+}
+
+/* ─── Card System ─── */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  border: none;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* ─── Primary Button ─── */
+.btn-primary {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+}
+
+/* ─── Teal Input Focus Glow ─── */
+.input-teal:focus {
+  border-color: #10B981 !important;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+  outline: none;
+}
+
+/* ─── Sidebar Gradient Footer ─── */
+.sidebar-footer-gradient {
+  background: linear-gradient(to bottom, transparent, #F3F4F6);
+}
+
+/* ─── Segmented Control Tab ─── */
+.segmented-tab-active {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  color: #10B981;
+  font-weight: 700;
+}
+
+/* ─── Progress Bar ─── */
+.progress-track {
+  height: 6px;
+  background: #F3F4F6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to right, #10B981, #059669);
+  transition: width 0.6s ease;
+}
+
+/* ─── Profile Banner Dot Pattern ─── */
+.banner-pattern {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
 }

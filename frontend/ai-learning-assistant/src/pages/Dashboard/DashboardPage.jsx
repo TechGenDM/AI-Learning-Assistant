@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
 import progressService from "../../services/progressService";
 import toast from "react-hot-toast";
-import { FileText, BookOpen, BrainCircuit, Clock3 } from "lucide-react";
+import {
+  FileText,
+  BookOpen,
+  BrainCircuit,
+  Clock3,
+  Upload,
+  Zap,
+  ArrowRight,
+} from "lucide-react";
 
 const formatDate = (value) => {
   if (!value) return "Recently";
@@ -14,6 +24,8 @@ const formatDate = (value) => {
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -26,14 +38,10 @@ const DashboardPage = () => {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
   }, []);
 
-  // 🔄 Loading State
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   const overview = dashboardData?.overview || {};
   const recentDocuments = Array.isArray(dashboardData?.recentActivity?.document)
@@ -45,74 +53,108 @@ const DashboardPage = () => {
 
   const recentActivity = [
     ...recentDocuments.map((doc) => ({
-      title: `Accessed Document: ${doc.title || doc.fileName || "Untitled Document"}`,
+      type: "document",
+      title: doc.title || doc.fileName || "Untitled Document",
       time: doc.lastAccessed || doc.updatedAt || doc.createdAt,
     })),
     ...recentQuizzes.map((quiz) => ({
-      title: `Attempted Quiz: ${quiz.title || quiz.fileName || "Untitled Quiz"}`,
+      type: "quiz",
+      title: quiz.title || quiz.fileName || "Untitled Quiz",
       time: quiz.lastAccessed || quiz.updatedAt || quiz.createdAt,
     })),
-  ].slice(0, 5);
+  ].slice(0, 6);
 
   const fallbackActivity = [
-    {
-      title: "Accessed Document: React JS Study Guide",
-      time: "22/11/2025, 10:39:15",
-    },
-    { title: "Attempted Quiz: React Js Guide Quiz", time: "Recently" },
+    { type: "document", title: "React JS Study Guide", time: "22/11/2025, 10:39:15" },
+    { type: "quiz", title: "React Js Guide Quiz", time: "Recently" },
   ];
+
+  const displayActivity = recentActivity.length ? recentActivity : fallbackActivity;
 
   const stats = [
     {
       label: "Total Documents",
       value: overview.totalDocuments ?? 0,
       icon: FileText,
-      bg: "bg-gradient-to-br from-sky-400 to-blue-500",
+      cardBg: "#EFF6FF",
+      iconBg: "#DBEAFE",
+      iconColor: "#3B82F6",
     },
     {
       label: "Total Flashcards",
       value: overview.totalFlashcards ?? overview.totalFlashcardSets ?? 0,
       icon: BookOpen,
-      bg: "bg-gradient-to-br from-fuchsia-400 to-pink-500",
+      cardBg: "#FDF2F8",
+      iconBg: "#FCE7F3",
+      iconColor: "#EC4899",
     },
     {
       label: "Total Quizzes",
       value: overview.totalQuizzes ?? 0,
       icon: BrainCircuit,
-      bg: "bg-gradient-to-br from-emerald-400 to-teal-500",
+      cardBg: "#F0FDF4",
+      iconBg: "#D1FAE5",
+      iconColor: "#10B981",
     },
+  ];
+
+  const quickActions = [
+    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents") },
+    { label: "Study Flashcards", icon: BookOpen, onClick: () => navigate("/documents") },
+    { label: "Take a Quiz", icon: Zap, onClick: () => navigate("/documents") },
   ];
 
   return (
     <div className="w-full max-w-none">
-      <div className="mb-6">
-        <h1 className="text-[30px] font-semibold text-gray-800">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">
+      {/* Greeting + Title */}
+      <div className="mb-7">
+        <p className="text-[13px] text-[#9CA3AF] font-medium mb-1">
+          Welcome back, {user?.username || "Learner"} 👋
+        </p>
+        <h1 className="text-[28px] font-bold text-[#111827] leading-tight">
+          Dashboard
+        </h1>
+        <p className="text-sm text-[#9CA3AF] mt-1">
           Track your learning progress and activity
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl border border-[#edf1f6] px-6 py-5 shadow-[0_3px_10px_rgba(15,23,42,0.04)]"
+              className="rounded-2xl p-6 transition-all duration-200 cursor-default"
+              style={{
+                background: stat.cardBg,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+                minHeight: "120px",
+              }}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">
+                  <p className="text-[11px] uppercase tracking-widest font-semibold text-[#9CA3AF] mb-3">
                     {stat.label}
                   </p>
-                  <p className="text-4xl mt-3 font-semibold text-gray-900">
+                  <p
+                    className="font-extrabold text-[#111827] leading-none"
+                    style={{ fontSize: "40px" }}
+                  >
                     {stat.value}
                   </p>
+                  <p className="text-[12px] text-[#9CA3AF] mt-2">Last updated today</p>
                 </div>
                 <div
-                  className={`h-11 w-11 rounded-xl ${stat.bg} text-white flex items-center justify-center shadow-sm`}
+                  className="flex items-center justify-center rounded-2xl flex-shrink-0"
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    background: stat.iconBg,
+                  }}
                 >
-                  <Icon size={19} />
+                  <Icon size={22} color={stat.iconColor} />
                 </div>
               </div>
             </div>
@@ -120,30 +162,94 @@ const DashboardPage = () => {
         })}
       </div>
 
-      <div className="mt-6 bg-white rounded-2xl border border-[#edf1f6] shadow-[0_3px_10px_rgba(15,23,42,0.04)] p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-            <Clock3 size={16} />
+      {/* Quick Actions */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {quickActions.map((action) => {
+          const Icon = action.icon;
+          return (
+            <button
+              key={action.label}
+              onClick={action.onClick}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border-2 border-[#10B981] text-[#10B981] text-sm font-semibold transition-all duration-150 hover:bg-[#F0FDF4] cursor-pointer"
+              style={{ boxShadow: "0 1px 3px rgba(16,185,129,0.1)" }}
+            >
+              <Icon size={15} />
+              {action.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Recent Activity */}
+      <div
+        className="bg-white rounded-2xl p-5"
+        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)" }}
+      >
+        <div className="flex items-center gap-2.5 mb-5">
+          <div className="h-8 w-8 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#6B7280]">
+            <Clock3 size={15} />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-800">Recent Activity</h2>
+          <h2 className="text-[18px] font-semibold text-[#111827]">
+            Recent Activity
+          </h2>
         </div>
 
-        <div className="space-y-3">
-          {(recentActivity.length ? recentActivity : fallbackActivity).map((item, idx) => (
-            <div
-              key={`${item.title}-${idx}`}
-              className="border border-[#edf1f6] rounded-xl px-4 py-3.5 flex items-center justify-between gap-4"
-            >
-              <div>
-                <p className="text-sm text-gray-700">{item.title}</p>
-                <p className="text-xs text-gray-400 mt-1">{formatDate(item.time)}</p>
+        <div className="space-y-0">
+          {displayActivity.map((item, idx) => {
+            const isDoc = item.type === "document";
+            return (
+              <div key={`${item.title}-${idx}`}>
+                <div className="flex items-center justify-between gap-4 py-3.5 pl-4 pr-2"
+                  style={{ borderLeft: "3px solid #10B981" }}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {/* Type badge */}
+                    <span
+                      className="flex-shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                      style={{
+                        background: isDoc ? "#DBEAFE" : "#FEF3C7",
+                        color: isDoc ? "#2563EB" : "#D97706",
+                      }}
+                    >
+                      {isDoc ? "Document" : "Quiz"}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm text-[#374151] font-medium truncate">
+                        {isDoc ? "Accessed: " : "Attempted: "}{item.title}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-[12px] text-[#9CA3AF] hidden sm:block">
+                      {formatDate(item.time)}
+                    </span>
+                    <button
+                      onClick={() => navigate(isDoc ? "/documents" : "/documents")}
+                      className="text-sm font-semibold text-[#10B981] hover:text-[#059669] flex items-center gap-1 transition-colors cursor-pointer px-3 py-1.5 rounded-lg hover:bg-[#F0FDF4]"
+                    >
+                      View <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </div>
+                {idx < displayActivity.length - 1 && (
+                  <div className="h-px bg-[#F3F4F6] ml-4" />
+                )}
               </div>
-              <button className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 transition">
-                View
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
+
+        {/* View All link if > 5 items */}
+        {displayActivity.length >= 5 && (
+          <div className="mt-4 pt-4 border-t border-[#F3F4F6] flex justify-end">
+            <button
+              onClick={() => navigate("/documents")}
+              className="text-sm font-semibold text-[#10B981] hover:text-[#059669] transition-colors cursor-pointer"
+            >
+              View All Activity →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
