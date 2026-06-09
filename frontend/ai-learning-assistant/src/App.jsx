@@ -8,6 +8,9 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import DocumentsListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import FlashcardsPage from './pages/Flashcards/FlashcardsPage';
+import QuizzesPage from './pages/Quizzes/QuizzesPage';
+import SettingsPage from './pages/Settings/SettingsPage';
 import { useAuth } from './context/AuthContext';
 import PublicRoute from './components/auth/PublicRoute';
  
@@ -75,6 +78,30 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flashcards"
+          element={
+            <ProtectedRoute>
+              <FlashcardsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quizzes"
+          element={
+            <ProtectedRoute>
+              <QuizzesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

@@ -19,9 +19,10 @@ const FlashcardManager = ({ documentId }) => {
   const fetchFlashcards = async () => {
     setLoading(true);
     try {
-      const response = await flashcardService.getFlashcardsForDocument(documentId);
-      // Backend returns a single set or null if finding one, or array?
-      // Let's handle both in case controller returns {data: obj} or {data: [obj]}
+      const response = documentId 
+        ? await flashcardService.getFlashcardsForDocument(documentId)
+        : await flashcardService.getFlashcardSets();
+        
       const data = response.data;
       if (Array.isArray(data)) {
         setFlashcardSets(data);
@@ -107,25 +108,27 @@ const FlashcardManager = ({ documentId }) => {
           </div>
           <h3 className="text-[22px] font-bold text-gray-800 mb-2">No Flashcards Yet</h3>
           <p className="text-[15px] text-gray-500 max-w-md mx-auto mb-8">
-            Generate flashcards from your document to start learning and reinforce your knowledge.
+            {documentId ? "Generate flashcards from your document to start learning and reinforce your knowledge." : "You haven't generated any flashcards yet. Go to your documents to generate some!"}
           </p>
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0cd09f] hover:bg-[#0bc193] text-white font-semibold rounded-full transition-colors disabled:opacity-50 shadow-sm"
-          >
-            {isGenerating ? (
-              <>
-                <Spinner size="sm" color="white" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Brain size={20} />
-                Generate Flashcards
-              </>
-            )}
-          </button>
+          {documentId && (
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#0cd09f] hover:bg-[#0bc193] text-white font-semibold rounded-full transition-colors disabled:opacity-50 shadow-sm"
+            >
+              {isGenerating ? (
+                <>
+                  <Spinner size="sm" color="white" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Brain size={20} />
+                  Generate Flashcards
+                </>
+              )}
+            </button>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-[24px] shadow-sm border border-[#f0f2f5] p-6 lg:p-8">
@@ -134,17 +137,19 @@ const FlashcardManager = ({ documentId }) => {
               <h2 className="text-[20px] font-bold text-gray-800 mb-1">Your Flashcard Sets</h2>
               <p className="text-gray-500 text-sm font-medium">{flashcardSets.length} set{flashcardSets.length > 1 ? 's' : ''} available</p>
             </div>
-            <button
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-[#0cd09f] font-semibold rounded-full transition-colors disabled:opacity-50"
-            >
-              {isGenerating ? 'Generating...' : (
-                <>
-                  <Plus size={18} /> Generate More
-                </>
-              )}
-            </button>
+            {documentId && (
+              <button
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-[#0cd09f] font-semibold rounded-full transition-colors disabled:opacity-50"
+              >
+                {isGenerating ? 'Generating...' : (
+                  <>
+                    <Plus size={18} /> Generate More
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

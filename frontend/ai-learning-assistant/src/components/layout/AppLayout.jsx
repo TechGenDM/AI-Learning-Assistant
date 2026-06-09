@@ -4,16 +4,26 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 
 const AppLayout = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // Desktop
   const location = useLocation();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const toggleDesktopCollapse = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
   return (
-    <div className="flex h-screen bg-[#F8F7F4] text-neutral-900">
-      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="flex h-screen bg-[#F8F9FC] text-neutral-900">
+      <Sidebar 
+        isSidebarOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar} 
+        isSidebarCollapsed={isSidebarCollapsed}
+        toggleDesktopCollapse={toggleDesktopCollapse}
+      />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />

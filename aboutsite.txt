@@ -1,0 +1,38 @@
+# AI Learning Assistant - Site Overview
+
+## What is this site?
+The AI Learning Assistant is a full-stack, modern SaaS web application designed to help users learn more effectively using AI. It acts as a personal study hub where users can upload materials and automatically generate learning aids. 
+
+## Technical Stack
+- **Frontend:** React, Vite, Tailwind CSS v4, React Router, Lucide Icons.
+- **Backend:** Node.js, Express.js.
+- **Database:** MongoDB (using Mongoose models).
+- **Architecture:** Monorepo structure with separated `frontend/` and `backend/` directories, configured for easy local development and Vercel deployment.
+
+## Core Features
+1. **User Authentication & Profiles:** 
+   - Secure registration and login using JWT (JSON Web Tokens).
+   - User profile management.
+   - Automatic session timeout (24h) and logout handling.
+
+2. **Professional Dashboard:**
+   - A clean, data-forward dashboard (SaaS aesthetic).
+   - Displays key metrics: Total Documents, Flashcards, Quizzes, and a Study Streak tracker.
+   - Provides a "Recent Activity" feed summarizing recently accessed documents and attempted quizzes, with filtering options.
+   - Quick actions to seamlessly resume learning.
+
+3. **Document Management:**
+   - Upload and store study materials.
+   - View document details and size.
+
+4. **AI-Powered Learning Tools:**
+   - **Flashcards:** Automatic generation of flashcard sets from uploaded documents for spaced repetition studying.
+   - **Quizzes:** Generation of interactive quizzes to test knowledge retention.
+   - **AI Chat:** An interactive AI assistant interface (supported by `ChatHistory` models and AI routes) to ask questions about study materials.
+
+5. **Progress Tracking:**
+   - Tracks user interaction with documents and quizzes.
+   - Visual indicators of study streaks and weekly progress.
+
+## Purpose
+The platform bridges the gap between passive reading and active recall by using AI to transform static documents into interactive study materials (flashcards and quizzes), wrapped in a premium, distraction-free interface.

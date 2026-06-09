@@ -42,8 +42,57 @@ export const getDashboard = async (req, res, next) => {
         });
         const averageScore = completedQuizzes > 0 ? Math.round(totalScorePercentage / completedQuizzes) : 0;
 
-        // Study streak (simplified - in production, track daily activity)
-        const studyStreak = Math.floor(Math.random() * 7) + 1;
+        // Calculate Weekly Progress and Study Streak
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+
+        const docsThisWeek = await Document.find({ userId, createdAt: { $gte: sevenDaysAgo } }).select('createdAt');
+        const quizzesThisWeek = await Quiz.find({ userId, createdAt: { $gte: sevenDaysAgo } }).select('createdAt completedAt');
+        const flashcardsThisWeek = await Flashcard.find({ userId, updatedAt: { $gte: sevenDaysAgo } }).select('updatedAt');
+
+        const weeklyData = Array(7).fill(0);
+        const streakDays = Array(7).fill(false);
+        const dayLabels = [];
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            dayLabels.push(d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0));
+        }
+
+        const processActivity = (dateStr) => {
+            if (!dateStr) return;
+            const date = new Date(dateStr);
+            date.setHours(0, 0, 0, 0);
+            const diffTime = today.getTime() - date.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays >= 0 && diffDays <= 6) {
+                const index = 6 - diffDays;
+                weeklyData[index] += 1;
+                streakDays[index] = true;
+            }
+        };
+
+        docsThisWeek.forEach(doc => processActivity(doc.createdAt));
+        quizzesThisWeek.forEach(q => {
+            processActivity(q.createdAt);
+            if (q.completedAt) processActivity(q.completedAt);
+        });
+        flashcardsThisWeek.forEach(f => processActivity(f.updatedAt));
+
+        let studyStreak = 0;
+        let streakAlive = streakDays[6] || streakDays[5]; 
+        if (streakAlive) {
+             for (let i = 6; i >= 0; i--) {
+                 if (streakDays[i]) studyStreak++;
+                 else if (i !== 6) break; 
+             }
+        }
 
         res.status(200).json({
             success: true,
@@ -58,6 +107,11 @@ export const getDashboard = async (req, res, next) => {
                     completedQuizzes,
                     averageScore,
                     studyStreak
+                },
+                weeklyProgress: {
+                    labels: dayLabels,
+                    data: weeklyData,
+                    streakDays: streakDays
                 },
                 recentActivity: {
                     document: recentDocuments,

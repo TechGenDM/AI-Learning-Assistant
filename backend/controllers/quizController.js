@@ -1,5 +1,32 @@
 import Quiz from "../models/Quiz.js";
 
+// @desc Get all quizzes for the logged-in user across all documents
+// @route GET /api/quizzes/all
+// @access Private
+export const getAllQuizzes = async (req, res) => {
+    try {
+        const quizzes = await Quiz.find({ 
+            userId: req.user.id
+        })
+            .populate('documentId', 'title')
+            .select('-questions.correctAnswer -questions.explanation')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: quizzes.length,
+            data: quizzes
+        });
+    } catch (error) {
+        console.error('Get all quizzes error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to fetch quizzes',
+            statusCode: 500
+        });
+    }
+};
+
 // @desc Get all quizzes for the logged-in user
 // @route GET /api/quizzes
 // @access Private

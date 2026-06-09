@@ -47,10 +47,11 @@ export const getAllFlashcardSets = async (req, res) => {
 export const reviewFlashcard = async (req, res, next) => {
     try {
         const flashCardSet = await Flashcard.findOne({
+            'cards._id': req.params.cardId,
             userId: req.user.id,
         });
 
-        if(!flashcardSet){
+        if(!flashCardSet){
             return res.status(400).json({
                 success: false,
                 error: 'Flashcard set not found',
