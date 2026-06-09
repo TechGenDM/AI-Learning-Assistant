@@ -1,13 +1,20 @@
 import axiosInstance from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
 
+const extractError = (error) => {
+    let errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'An unknown error occurred';
+    if (typeof errorMessage === 'object') {
+        errorMessage = errorMessage.message || JSON.stringify(errorMessage);
+    }
+    return errorMessage;
+};
+
 const login = async (email, password) => {
     try {
         const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {email, password});
         return response.data;
     } catch (error) {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
-        throw new Error(errorMessage);
+        throw new Error(extractError(error));
     }
 };
 
@@ -16,8 +23,7 @@ const register = async (username, email, password) => {
         const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {username, email, password});
         return response.data;
     } catch (error) {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
-        throw new Error(errorMessage);
+        throw new Error(extractError(error));
     }
 };
 
@@ -26,8 +32,7 @@ const getProfile = async () => {
         const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
         return response.data;
     } catch (error) {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
-        throw new Error(errorMessage);
+        throw new Error(extractError(error));
     }
 };
 
@@ -36,8 +41,7 @@ const updateProfile = async (profileData) => {
         const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, profileData);
         return response.data;
     } catch (error) {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
-        throw new Error(errorMessage);
+        throw new Error(extractError(error));
     }
 };
 
@@ -46,8 +50,7 @@ const changePassword = async (currentPassword, newPassword) => {
         const response = await axiosInstance.put(API_PATHS.AUTH.CHANGE_PASSWORD, {currentPassword, newPassword});
         return response.data;
     } catch (error) {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unknown error occurred';
-        throw new Error(errorMessage);
+        throw new Error(extractError(error));
     }
 };
 
