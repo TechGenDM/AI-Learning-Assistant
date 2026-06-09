@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { PDFParse } from "pdf-parse";
+// Dynamically import pdf-parse inside the function to prevent top-level native module crashes on Vercel
 
 /**
  * Extracts text from a PDF file
@@ -10,6 +10,7 @@ export const extractTextFromPDF = async (filePath) => {
     let parser;
     try {
         const dataBuffer = await fs.readFile(filePath);
+        const { PDFParse } = await import("pdf-parse");
         parser = new PDFParse({ data: dataBuffer });
 
         const textResult = await parser.getText();
