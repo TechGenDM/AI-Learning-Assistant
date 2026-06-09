@@ -25,10 +25,24 @@ const app = express();
 connectDB();
 
 // Middleware to handle CORS
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || process.env.VITE_API_URL || "*",
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        origin: function (origin, callback) {
+            // Allow requests with no origin (mobile apps, curl, etc)
+            if (!origin) return callback(null, true);
+            // Allow any .vercel.app subdomain
+            if (origin.endsWith('.vercel.app') || allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(null, true); // Allow all for now, tighten later
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
     })
@@ -83,7 +97,7 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
 
 process.on('unhandledRejection', (err) => {
     console.log(`Error: ${err.message}`);
-    process.exit(1);
+    // Do not process.exit in serverless — it kills the function
 });
 
 
